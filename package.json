@@ -5,5 +5,8 @@
   "repository": "git@github.com:0918nobita/logic.git",
   "author": "0918nobita <nobita.0918@gmail.com>",
   "license": "CC-0",
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "typescript": "^3.4.5"
+  }
 }
