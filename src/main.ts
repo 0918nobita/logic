@@ -37,3 +37,10 @@ class Expr<T extends ExprType> {
     }
   }
 }
+
+const True = new Expr(ExprType.TRUE);
+const False = new Expr(ExprType.FALSE);
+const X = new Expr(ExprType.CONJUNCTION, True, False);
+const Y = new Expr(ExprType.DISJUNCTION, X, new Expr(ExprType.IMPLICATION, False, new Expr(ExprType.NEGATION, X)));
+
+console.log(Y.toString());
