@@ -39,3 +39,10 @@ function Push(val: number) {
     return stack;
   });
 }
+
+function Pop() {
+  return composite(stack => {
+    stack.pop();
+    return stack;
+  });
+}
