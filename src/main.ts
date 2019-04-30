@@ -1,9 +1,11 @@
 enum ExprType {
-  TRUE, FALSE,
-  CONJUNCTION, DISJUNCTION,
+  TRUE,
+  FALSE,
+  CONJUNCTION,
+  DISJUNCTION,
   IMPLICATION,
   NEGATION,
-  VARIABLE,
+  VARIABLE
 }
 
 interface Expr {
@@ -34,9 +36,11 @@ class LogicExpr<T extends ExprType> implements Expr {
 
   constructor(
     public type: T,
-    ...args:
-        Expr[] &
-        { length: T extends (ExprType.TRUE | ExprType.FALSE) ? 0 : (T extends ExprType.NEGATION ? 1 : 2) }
+    ...args: Expr[] & {
+      length: T extends (ExprType.TRUE | ExprType.FALSE)
+        ? 0
+        : (T extends ExprType.NEGATION ? 1 : 2);
+    }
   ) {
     this.params = args;
   }
@@ -49,40 +53,53 @@ class LogicExpr<T extends ExprType> implements Expr {
       case ExprType.FALSE:
         return true;
       case ExprType.NEGATION:
-        return (this.params[0].equals(target.params[0]));
-      default:  // CONJUNCTION, DISJUNCTION, IMPLICATION
-        return (this.params[0].equals(target.params[0])) && (this.params[1].equals(target.params[1]));
+        return this.params[0].equals(target.params[0]);
+      default:
+        // CONJUNCTION, DISJUNCTION, IMPLICATION
+        return (
+          this.params[0].equals(target.params[0]) &&
+          this.params[1].equals(target.params[1])
+        );
     }
   }
 
   toString(): string {
     const lhs = () => {
-      if (this.params[0].type === ExprType.TRUE || this.params[0].type === ExprType.FALSE || this.params[0].type === ExprType.VARIABLE) {
+      if (
+        this.params[0].type === ExprType.TRUE ||
+        this.params[0].type === ExprType.FALSE ||
+        this.params[0].type === ExprType.VARIABLE
+      ) {
         return this.params[0].toString();
       }
       return enclose(this.params[0].toString());
     };
 
     const rhs = () => {
-      if (this.params[1].type === ExprType.TRUE || this.params[1].type === ExprType.FALSE || this.params[1].type === ExprType.VARIABLE) {
+      if (
+        this.params[1].type === ExprType.TRUE ||
+        this.params[1].type === ExprType.FALSE ||
+        this.params[1].type === ExprType.VARIABLE
+      ) {
         return this.params[1].toString();
       }
       return enclose(this.params[1].toString());
-    }
+    };
 
     switch (this.type) {
       case ExprType.TRUE:
-        return "t";
+        return 't';
       case ExprType.FALSE:
-        return "f";
+        return 'f';
       case ExprType.CONJUNCTION:
         return `${lhs()} ∧ ${rhs()}`;
       case ExprType.DISJUNCTION:
         return `${lhs()} ∨ ${rhs()}`;
       case ExprType.IMPLICATION:
         return `${lhs()} ⊃ ${rhs()}`;
-      default:  // NEGATION
-        return `¬ ${lhs()}`
+      default:
+        // NEGATION
+        return `¬ ${lhs()}`;
     }
 
     function enclose(str: string) {
@@ -94,15 +111,30 @@ class LogicExpr<T extends ExprType> implements Expr {
 const True = new LogicExpr(ExprType.TRUE);
 const False = new LogicExpr(ExprType.FALSE);
 const X = new LogicExpr(ExprType.CONJUNCTION, True, False);
-const Y = new LogicExpr(ExprType.DISJUNCTION, X, new LogicExpr(ExprType.IMPLICATION, False, new LogicExpr(ExprType.NEGATION, X)));
+const Y = new LogicExpr(
+  ExprType.DISJUNCTION,
+  X,
+  new LogicExpr(
+    ExprType.IMPLICATION,
+    False,
+    new LogicExpr(ExprType.NEGATION, X)
+  )
+);
 
 console.log(Y.toString());
 
 class Sequent<T extends ExprType, K extends ExprType> {
-  constructor(private antecedent: LogicExpr<T>[], private succedent: LogicExpr<K>[]) {}
+  constructor(
+    private antecedent: LogicExpr<T>[],
+    private succedent: LogicExpr<K>[]
+  ) {}
 
   toString(): string {
-    return `${this.antecedent.map(expr => expr.toString()).join(', ')} |- ${this.succedent.map(expr => expr.toString()).join(', ')}`
+    return `${this.antecedent
+      .map(expr => expr.toString())
+      .join(', ')} |- ${this.succedent
+      .map(expr => expr.toString())
+      .join(', ')}`;
   }
 }
 
