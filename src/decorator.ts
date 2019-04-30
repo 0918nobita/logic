@@ -32,3 +32,10 @@ function composite(fn: (ret: any) => any) {
     };
   };
 }
+
+function Push(val: number) {
+  return composite(stack => {
+    stack.push(val);
+    return stack;
+  });
+}
