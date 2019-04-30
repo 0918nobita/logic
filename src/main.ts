@@ -97,3 +97,14 @@ const X = new LogicExpr(ExprType.CONJUNCTION, True, False);
 const Y = new LogicExpr(ExprType.DISJUNCTION, X, new LogicExpr(ExprType.IMPLICATION, False, new LogicExpr(ExprType.NEGATION, X)));
 
 console.log(Y.toString());
+
+class Sequent<T extends ExprType, K extends ExprType> {
+  constructor(private antecedent: LogicExpr<T>[], private succedent: LogicExpr<K>[]) {}
+
+  toString(): string {
+    return `${this.antecedent.map(expr => expr.toString()).join(', ')} |- ${this.succedent.map(expr => expr.toString()).join(', ')}`
+  }
+}
+
+const seq = new Sequent([X, new Variable('A')], [new Variable('B'), Y]);
+console.log(seq.toString());
