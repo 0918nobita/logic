@@ -9,7 +9,7 @@ class Expr<T extends ExprType> {
   private params: Expr<any>[];
 
   constructor(
-    private type: T,
+    public type: T,
     ...args:
         Expr<any>[] &
         { length: T extends (ExprType.TRUE | ExprType.FALSE) ? 0 : (T extends ExprType.NEGATION ? 1 : 2) }
@@ -18,8 +18,19 @@ class Expr<T extends ExprType> {
   }
 
   toString(): string {
-    const lhs = () => this.params[0].toString();
-    const rhs = () => this.params[1].toString();
+    const lhs = () => {
+      if (this.params[0].type === ExprType.TRUE || this.params[0].type === ExprType.FALSE) {
+        return this.params[0].toString();
+      }
+      return enclose(this.params[0].toString());
+    };
+
+    const rhs = () => {
+      if (this.params[1].type === ExprType.TRUE || this.params[1].type === ExprType.FALSE) {
+        return this.params[1].toString();
+      }
+      return enclose(this.params[1].toString());
+    }
 
     switch (this.type) {
       case ExprType.TRUE:
@@ -27,13 +38,17 @@ class Expr<T extends ExprType> {
       case ExprType.FALSE:
         return "f";
       case ExprType.CONJUNCTION:
-        return `* ${lhs()} ${rhs()}`;
+        return `${lhs()} ∧ ${rhs()}`;
       case ExprType.DISJUNCTION:
-        return `+ ${lhs()} ${rhs()}`;
+        return `${lhs()} ∨ ${rhs()}`;
       case ExprType.IMPLICATION:
-        return `-> ${lhs()} ${rhs()}`;
+        return `${lhs()} ⊃ ${rhs()}`;
       default:  // NEGATION
-        return `! ${lhs()}`
+        return `¬ ${lhs()}`
+    }
+
+    function enclose(str: string) {
+      return `(${str})`;
     }
   }
 }
