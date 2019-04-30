@@ -46,3 +46,12 @@ function Pop() {
     return stack;
   });
 }
+
+function Mul() {
+  return composite(stack => {
+    const x = stack.pop() as number;
+    const y = stack.pop() as number;
+    stack.push(x * y);
+    return stack;
+  });
+}
