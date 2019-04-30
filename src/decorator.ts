@@ -68,3 +68,27 @@ class StackDSL {
 }
 
 console.log(new StackDSL().run()); // => [ 6 ]
+
+const WatchPropChanges = (constructor: Function) => {
+  constructor.prototype = new Proxy(constructor.prototype, {
+    set(_: any, name: any, value: any) {
+      console.log({ name, value });
+      return true;
+    }
+  });
+};
+
+@WatchPropChanges
+class Foo {
+  a = 42;
+  b = 'hoge';
+
+  update() {
+    console.log('Update');
+    this.a = 334;
+    this.b = 'huga';
+  }
+}
+
+const foo = new Foo();
+foo.update();
