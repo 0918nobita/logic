@@ -22,3 +22,13 @@ class Test {
 }
 
 console.log(new Test().test());
+
+function composite(fn: (ret: any) => any) {
+  return (_: any, __: string, descriptor: PropertyDescriptor) => {
+    const method = descriptor.value;
+    descriptor.value = function() {
+      const ret = method.apply(this, arguments);
+      return fn(ret);
+    };
+  };
+}
