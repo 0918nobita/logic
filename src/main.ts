@@ -3,6 +3,7 @@ enum ExprType {
   CONJUNCTION, DISJUNCTION,
   IMPLICATION,
   NEGATION,
+  VARIABLE,
 }
 
 class Expr<T extends ExprType> {
