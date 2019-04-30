@@ -17,6 +17,20 @@ class Expr<T extends ExprType> {
     this.params = args;
   }
 
+  equals(expr: Expr<any>): boolean {
+    if (expr.type !== this.type) return false;
+
+    switch (this.type) {
+      case ExprType.TRUE:
+      case ExprType.FALSE:
+        return true;
+      case ExprType.NEGATION:
+        return (this.params[0].equals(expr.params[0]));
+      default:  // CONJUNCTION, DISJUNCTION, IMPLICATION
+        return (this.params[0].equals(expr.params[0])) && (this.params[1].equals(expr.params[1]));
+    }
+  }
+
   toString(): string {
     const lhs = () => {
       if (this.params[0].type === ExprType.TRUE || this.params[0].type === ExprType.FALSE) {
