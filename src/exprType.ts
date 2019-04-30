@@ -1,0 +1,9 @@
+export enum ExprType {
+  TRUE,
+  FALSE,
+  CONJUNCTION,
+  DISJUNCTION,
+  IMPLICATION,
+  NEGATION,
+  VARIABLE
+}
