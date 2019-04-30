@@ -55,3 +55,16 @@ function Mul() {
     return stack;
   });
 }
+
+class StackDSL {
+  @Mul()
+  @Push(3)
+  @Pop()
+  @Push(1)
+  @Push(2)
+  run() {
+    return [];
+  }
+}
+
+console.log(new StackDSL().run()); // => [ 6 ]
