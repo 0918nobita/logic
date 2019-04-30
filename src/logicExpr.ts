@@ -42,7 +42,7 @@ export class LogicExpr<T extends ExprType> implements Expr {
       ) {
         return this.params[0].toString();
       }
-      return enclose(this.params[0].toString());
+      return `(${this.params[0].toString()})`;
     };
 
     const rhs = () => {
@@ -53,7 +53,7 @@ export class LogicExpr<T extends ExprType> implements Expr {
       ) {
         return this.params[1].toString();
       }
-      return enclose(this.params[1].toString());
+      return `(${this.params[1].toString()})`;
     };
 
     switch (this.type) {
@@ -70,10 +70,6 @@ export class LogicExpr<T extends ExprType> implements Expr {
       default:
         // NEGATION
         return `¬ ${lhs()}`;
-    }
-
-    function enclose(str: string) {
-      return `(${str})`;
     }
   }
 }
