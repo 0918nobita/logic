@@ -1,5 +1,6 @@
 import { Expr } from './expr';
 import { ExprType } from './exprType';
+import { cond } from './cond';
 
 export class LogicExpr<T extends ExprType> implements Expr {
   params: Expr[];
@@ -18,58 +19,51 @@ export class LogicExpr<T extends ExprType> implements Expr {
   equals(target: Expr): boolean {
     if (target.type !== this.type) return false;
 
-    switch (this.type) {
-      case ExprType.TRUE:
-      case ExprType.FALSE:
-        return true;
-      case ExprType.NEGATION:
-        return this.params[0].equals(target.params[0]);
-      default:
-        // CONJUNCTION, DISJUNCTION, IMPLICATION
-        return (
-          this.params[0].equals(target.params[0]) &&
-          this.params[1].equals(target.params[1])
-        );
-    }
+    return cond(
+      this.type,
+      [
+        [val => val === ExprType.TRUE || val === ExprType.FALSE, () => true],
+        [
+          val => val === ExprType.NEGATION,
+          () => this.params[0].equals(target.params[0])
+        ]
+      ],
+      () =>
+        this.params[0].equals(target.params[0]) &&
+        this.params[1].equals(target.params[1])
+    );
   }
 
   toString(): string {
-    const lhs = () => {
-      if (
-        this.params[0].type === ExprType.TRUE ||
-        this.params[0].type === ExprType.FALSE ||
-        this.params[0].type === ExprType.VARIABLE
-      ) {
-        return this.params[0].toString();
-      }
-      return `(${this.params[0].toString()})`;
-    };
+    const term = (index: number) =>
+      cond(
+        this.params[index].type,
+        [
+          [
+            type =>
+              type === ExprType.TRUE ||
+              type === ExprType.FALSE ||
+              type === ExprType.VARIABLE,
+            () => this.params[index].toString()
+          ]
+        ],
+        () => `(${this.params[index].toString()})`
+      );
 
-    const rhs = () => {
-      if (
-        this.params[1].type === ExprType.TRUE ||
-        this.params[1].type === ExprType.FALSE ||
-        this.params[1].type === ExprType.VARIABLE
-      ) {
-        return this.params[1].toString();
-      }
-      return `(${this.params[1].toString()})`;
-    };
+    const lhs = () => term(0);
 
-    switch (this.type) {
-      case ExprType.TRUE:
-        return 't';
-      case ExprType.FALSE:
-        return 'f';
-      case ExprType.CONJUNCTION:
-        return `${lhs()} ∧ ${rhs()}`;
-      case ExprType.DISJUNCTION:
-        return `${lhs()} ∨ ${rhs()}`;
-      case ExprType.IMPLICATION:
-        return `${lhs()} ⊃ ${rhs()}`;
-      default:
-        // NEGATION
-        return `¬ ${lhs()}`;
-    }
+    const rhs = () => term(1);
+
+    return cond(
+      this.type,
+      [
+        [type => type === ExprType.TRUE, () => 't'],
+        [type => type === ExprType.FALSE, () => 'f'],
+        [type => type === ExprType.CONJUNCTION, () => `${lhs()} ∧ ${rhs()}`],
+        [type => type === ExprType.DISJUNCTION, () => `${lhs()} ∨ ${rhs()}`],
+        [type => type === ExprType.IMPLICATION, () => `${lhs()} ⊃ ${rhs()}`]
+      ],
+      () => `¬ ${lhs()}`
+    );
   }
 }
