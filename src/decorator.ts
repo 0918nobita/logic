@@ -69,14 +69,14 @@ class StackDSL {
 
 console.log(new StackDSL().run()); // => [ 6 ]
 
-const WatchPropChanges = (constructor: Function) => {
+function WatchPropChanges(constructor: Function) {
   constructor.prototype = new Proxy(constructor.prototype, {
-    set(_: any, name: any, value: any) {
+    set(_: any, name: string | number | symbol, value: any) {
       console.log({ name, value });
       return true;
     }
   });
-};
+}
 
 @WatchPropChanges
 class Foo {
